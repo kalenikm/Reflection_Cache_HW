@@ -37,6 +37,11 @@ namespace ReflectionComparer
 
             type = type != x.GetType() ? x.GetType() : type;
 
+            if (type == typeof(string))
+            {
+                return CompareEnumerables(type, x, y);
+            }
+
             if (typeof(IEnumerable).IsAssignableFrom(type))
             {
                 return CompareEnumerables(type, x, y);
