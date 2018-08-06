@@ -81,11 +81,11 @@ namespace ReflectionCache
             return new XElement(type.Name, new XAttribute("type", type.FullName), elems);
         }
 
-        public static object ToModel<T>(this XDocument doc)
+        public static T ToModel<T>(this XDocument doc)
         {
             var root = doc.Root;
 
-            return ToModel(root, null, typeof(T));
+            return (T)ToModel(root, null, typeof(T));
         }
 
         private static object ToModel(XElement elem, object obj, Type type)

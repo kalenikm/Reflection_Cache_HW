@@ -48,20 +48,18 @@ namespace RedisCacheConsole
                 var db = redis.GetDatabase();
 
                 var result = db.StringGet(id);
-                var xmlDoc = XDocument.Parse(result.ToString());
-                var strTime = xmlDoc.Root?.Attribute("expTime")?.Value;
-                var timeExist = DateTime.TryParse(strTime, out var time);
 
-                if (result.IsNullOrEmpty || !timeExist || GetExpTime() <= DateTime.UtcNow - time.ToUniversalTime()) 
+                if (result.IsNullOrEmpty) 
                 {
                     var student = GetStudentWithWait(id);
                     var xmlStudent = student.ToXml();
-                    xmlStudent.Root?.Add(new XAttribute("expTime", DateTime.UtcNow));
                     db.StringSet(id, xmlStudent.ToString());
+                    db.KeyExpire(id, GetExpTime());
                     return student;
                 }
 
-                return (Student)xmlDoc.ToModel<Student>();
+                var xmlDoc = XDocument.Parse(result.ToString());
+                return xmlDoc.ToModel<Student>();
             }
         }
 
